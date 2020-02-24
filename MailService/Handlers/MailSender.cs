@@ -19,12 +19,13 @@ namespace MailService.Handlers
         {
             var mailMessage = new MailMessage {Subject = mail.Title, IsBodyHtml = false};
             mailMessage.ReplyToList.Add(mail.SenderEmail);
+            mailMessage.From = new MailAddress(mail.SenderEmail);
             mailMessage.BodyEncoding = Encoding.UTF8;
             mailMessage.HeadersEncoding = Encoding.UTF8;
             mailMessage.SubjectEncoding = Encoding.UTF8;
             foreach (var headerRecipient in mail.Recipients)
             {
-                mailMessage.To.Add(headerRecipient.Email);
+                mailMessage.To.Add(headerRecipient);
             }
 
             var plainView =

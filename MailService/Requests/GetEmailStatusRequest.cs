@@ -3,7 +3,7 @@ using MediatR;
 
 namespace MailService.Requests
 {
-    public class GetEmailStatusRequest : IRequest<MailHeader>
+    public class GetEmailStatusRequest : IRequest<MailSummary>
     {
         public long Id { get; }
 

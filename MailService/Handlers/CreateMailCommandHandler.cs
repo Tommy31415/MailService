@@ -17,7 +17,6 @@ namespace MailService.Handlers
 
         public async Task Handle(CreateMailCommand notification, CancellationToken cancellationToken)
         {
-            
             _context.Mails.Add(notification.Mail);
             await _context.SaveChangesAsync(cancellationToken);
         }

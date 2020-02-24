@@ -1,4 +1,5 @@
-﻿using MailService.Models;
+﻿using System;
+using MailService.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace MailService.Data
@@ -11,7 +12,15 @@ namespace MailService.Data
         {
         }
 
-        public DbSet<Recipient> Recipients { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Mail>()
+                .Property(e => e.Recipients)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+        }
+
         public DbSet<Mail> Mails { get; set; }
 
     }

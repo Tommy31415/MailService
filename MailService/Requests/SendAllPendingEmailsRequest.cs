@@ -3,7 +3,7 @@ using MediatR;
 
 namespace MailService.Requests
 {
-    public class SendAllPendingEmailsRequest : IRequest<MailHeader[]>
+    public class SendAllPendingEmailsRequest : IRequest<MailSummary[]>
     {
     }
 }

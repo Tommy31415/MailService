@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using MailService.Data;
 using MailService.Models;
@@ -8,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MailService.Handlers
 {
-    public class SendAllPendingEmailsRequestHandler : IRequestHandler<SendAllPendingEmailsRequest, MailHeader[]>
+    public class SendAllPendingEmailsRequestHandler : IRequestHandler<SendAllPendingEmailsRequest, MailSummary[]>
     {
         private readonly DataContext _context;
         private readonly IMailSender _mailSender;
@@ -19,15 +21,30 @@ namespace MailService.Handlers
             _mailSender = mailSender;
         }
 
-        public async Task<MailHeader[]> Handle(SendAllPendingEmailsRequest request, CancellationToken cancellationToken)
+        public async Task<MailSummary[]> Handle(SendAllPendingEmailsRequest request, CancellationToken cancellationToken)
         {
+            var sentMailList = new List<MailSummary>();
             var mails = await _context.Mails.ToListAsync(cancellationToken);
             foreach (var mail in mails)
             {
-                _mailSender.Send(mail);
+                if (mail.MailStatus == EMailStatus.Pending)
+                {
+                    try
+                    {
+                        _mailSender.Send(mail);
+                        mail.MailStatus = EMailStatus.Sent;
+                        sentMailList.Add(new MailSummary(EMailStatus.Sent,mail.Title));
+                    }
+                    catch 
+                    {
+                        mail.MailStatus = EMailStatus.Invalid;
+                        sentMailList.Add(new MailSummary(EMailStatus.Invalid, mail.Title));
+                    }
+                }
             }
 
-            return null;
+            await _context.SaveChangesAsync(cancellationToken);
+            return sentMailList.ToArray();
         }
     }
 }

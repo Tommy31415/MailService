@@ -3,6 +3,7 @@
     public enum EMailStatus
     {
         Pending,
-        Sent
+        Sent,
+        Invalid
     }
 }

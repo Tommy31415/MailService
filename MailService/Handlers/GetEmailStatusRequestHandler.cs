@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MailService.Data;
@@ -8,7 +9,7 @@ using MediatR;
 
 namespace MailService.Handlers
 {
-    public class GetEmailStatusRequestHandler : IRequestHandler<GetEmailStatusRequest, MailHeader>
+    public class GetEmailStatusRequestHandler : IRequestHandler<GetEmailStatusRequest, MailSummary>
     {
         private readonly DataContext _context;
 
@@ -17,11 +18,10 @@ namespace MailService.Handlers
             _context = context;
         }
 
-        public async Task<MailHeader> Handle(GetEmailStatusRequest request, CancellationToken cancellationToken)
+        public async Task<MailSummary> Handle(GetEmailStatusRequest request, CancellationToken cancellationToken)
         {
             var mail = await _context.Mails.FindAsync(request.Id);
-            //return mail?.Header;
-            throw  new NotImplementedException();
+            return new MailSummary(mail.MailStatus, mail.Title);
         }
     }
 }
